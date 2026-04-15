@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terraphim AI - Rust Knowledge Graph Engine</title>
+  <meta name="description" content="Privacy-first knowledge graph search engine built in Rust. 52 crates, sub-millisecond latency, zero cloud dependency. Install via cargo, Homebrew, or curl.">
+  <meta property="og:title" content="Terraphim AI - Rust Knowledge Graph Engine">
+  <meta property="og:description" content="52-crate Rust workspace for deterministic knowledge graph search. Aho-Corasick automata, role-based graphs, MCP server, AI Dark Factory orchestration.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://terraphim.rs">
+  <link rel="canonical" href="https://terraphim.rs">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      --bg: #0a0e17;
+      --bg-card: #111827;
+      --bg-card-hover: #1a2332;
+      --accent: #00e5ff;
+      --accent-dim: #007a8a;
+      --text: #e0e6ed;
+      --text-dim: #8892a4;
+      --text-bright: #ffffff;
+      --rust: #dea584;
+      --green: #00e676;
+      --border: #1e293b;
+      --font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --mono: "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
+
+    /* --- NAV --- */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(10, 14, 23, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 0;
+    }
+    .nav-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      max-width: 1100px; margin: 0 auto; padding: 0 1.5rem;
+    }
+    .nav-brand {
+      font-size: 1.1rem; font-weight: 700; color: var(--text-bright);
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .nav-brand .rust-icon { color: var(--rust); }
+    .nav-links { display: flex; gap: 1.25rem; align-items: center; font-size: 0.9rem; }
+    .nav-links a { color: var(--text-dim); transition: color 0.2s; }
+    .nav-links a:hover { color: var(--accent); text-decoration: none; }
+
+    /* --- HERO --- */
+    .hero {
+      text-align: center; padding: 5rem 1.5rem 3rem;
+      background: radial-gradient(ellipse at 50% 0%, rgba(0, 229, 255, 0.06) 0%, transparent 60%);
+    }
+    .hero-badges {
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem;
+      margin-bottom: 2rem;
+    }
+    .hero-badges img { height: 20px; }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 800; color: var(--text-bright);
+      line-height: 1.15; margin-bottom: 1rem;
+    }
+    .hero h1 .accent { color: var(--accent); }
+    .hero h1 .rust-col { color: var(--rust); }
+    .hero-sub {
+      font-size: 1.15rem; color: var(--text-dim); max-width: 680px;
+      margin: 0 auto 2rem; line-height: 1.7;
+    }
+    .hero-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.65rem 1.4rem; border-radius: 6px; font-size: 0.95rem;
+      font-weight: 600; transition: all 0.2s; border: 1px solid transparent;
+    }
+    .btn-primary {
+      background: var(--accent); color: var(--bg); border-color: var(--accent);
+    }
+    .btn-primary:hover { background: #33ecff; text-decoration: none; }
+    .btn-ghost {
+      background: transparent; color: var(--text); border-color: var(--border);
+    }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
+
+    /* --- INSTALL --- */
+    .install-section {
+      padding: 3rem 0;
+    }
+    .install-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1rem;
+    }
+    .install-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 8px; padding: 1.25rem;
+    }
+    .install-card h3 {
+      font-size: 0.95rem; color: var(--text-bright); margin-bottom: 0.75rem;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .install-card h3 i { color: var(--accent); }
+    pre {
+      background: #050810; border: 1px solid var(--border); border-radius: 6px;
+      padding: 0.85rem 1rem; overflow-x: auto; font-size: 0.85rem;
+      font-family: var(--mono); color: var(--green); line-height: 1.5;
+    }
+    pre .comment { color: var(--text-dim); }
+
+    /* --- STATS --- */
+    .stats {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem; padding: 2rem 0 3rem; text-align: center;
+    }
+    .stat { padding: 1.25rem; }
+    .stat-val {
+      font-size: 2rem; font-weight: 800; color: var(--accent);
+      font-family: var(--mono);
+    }
+    .stat-label { font-size: 0.85rem; color: var(--text-dim); margin-top: 0.25rem; }
+
+    /* --- SECTION --- */
+    .section { padding: 3rem 0; }
+    .section-head {
+      text-align: center; margin-bottom: 2.5rem;
+    }
+    .section-head h2 {
+      font-size: 1.8rem; font-weight: 700; color: var(--text-bright);
+      margin-bottom: 0.5rem;
+    }
+    .section-head p { color: var(--text-dim); max-width: 600px; margin: 0 auto; }
+
+    .divider {
+      border: none; border-top: 1px solid var(--border); margin: 0;
+    }
+
+    /* --- CAPABILITIES --- */
+    .cap-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.25rem;
+    }
+    .cap-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 8px; padding: 1.5rem;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .cap-card:hover { border-color: var(--accent-dim); background: var(--bg-card-hover); }
+    .cap-card h3 {
+      font-size: 1.05rem; color: var(--text-bright); margin-bottom: 0.5rem;
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    .cap-card h3 i { color: var(--accent); font-size: 1.1rem; }
+    .cap-card p { color: var(--text-dim); font-size: 0.92rem; line-height: 1.6; }
+
+    /* --- CRATE TABLE --- */
+    .crate-section { padding: 3rem 0; }
+    .crate-group { margin-bottom: 2rem; }
+    .crate-group h3 {
+      font-size: 1.1rem; color: var(--text-bright); margin-bottom: 0.75rem;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .crate-group h3 i { color: var(--accent); }
+    .crate-table {
+      width: 100%; border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+    .crate-table th {
+      text-align: left; padding: 0.5rem 0.75rem;
+      color: var(--text-dim); font-weight: 600;
+      border-bottom: 1px solid var(--border); font-size: 0.8rem;
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .crate-table td {
+      padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    .crate-table td:first-child {
+      font-family: var(--mono); font-weight: 600; color: var(--rust);
+      white-space: nowrap;
+    }
+    .crate-table td:last-child { color: var(--text-dim); }
+    .crate-table tr:hover td { background: rgba(0, 229, 255, 0.03); }
+
+    /* --- ARCH --- */
+    .arch-layers {
+      display: flex; flex-direction: column; gap: 0.5rem;
+      max-width: 700px; margin: 0 auto;
+    }
+    .arch-layer {
+      display: flex; align-items: center; gap: 1rem;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 6px; padding: 0.75rem 1.25rem;
+    }
+    .arch-layer:hover { border-color: var(--accent-dim); }
+    .arch-num {
+      font-family: var(--mono); font-weight: 800; font-size: 1.1rem;
+      color: var(--accent); min-width: 1.5rem;
+    }
+    .arch-name { font-weight: 600; color: var(--text-bright); min-width: 140px; }
+    .arch-crates { font-family: var(--mono); font-size: 0.82rem; color: var(--text-dim); }
+
+    /* --- BINDINGS --- */
+    .bindings-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+    .binding-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 8px; padding: 1.25rem;
+    }
+    .binding-card h3 {
+      font-size: 1rem; color: var(--text-bright); margin-bottom: 0.5rem;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .binding-card p { color: var(--text-dim); font-size: 0.9rem; margin-bottom: 0.75rem; }
+
+    /* --- FOOTER --- */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem 0; text-align: center;
+      font-size: 0.85rem; color: var(--text-dim);
+    }
+    footer a { color: var(--text-dim); }
+    footer a:hover { color: var(--accent); }
+    .footer-links {
+      display: flex; flex-wrap: wrap; justify-content: center;
+      gap: 1.5rem; margin-bottom: 0.75rem;
+    }
+
+    /* --- RESPONSIVE --- */
+    @media (max-width: 640px) {
+      .nav-links { gap: 0.75rem; font-size: 0.8rem; }
+      .hero { padding: 3rem 1rem 2rem; }
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .arch-layer { flex-direction: column; align-items: flex-start; gap: 0.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="/" class="nav-brand">
+      <i class="fa-brands fa-rust rust-icon"></i> terraphim.rs
+    </a>
+    <div class="nav-links">
+      <a href="#install">Install</a>
+      <a href="#capabilities">Capabilities</a>
+      <a href="#crates">Crates</a>
+      <a href="#architecture">Architecture</a>
+      <a href="https://docs.terraphim.ai">Docs</a>
+      <a href="https://terraphim.ai">Website</a>
+      <a href="https://github.com/terraphim/terraphim-ai">
+        <i class="fa-brands fa-github"></i> GitHub
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badges">
+    <a href="https://crates.io/crates/terraphim_agent"><img src="https://img.shields.io/crates/v/terraphim_agent.svg" alt="crates.io"></a>
+    <a href="https://github.com/terraphim/homebrew-terraphim"><img src="https://img.shields.io/badge/homebrew-terraphim-orange?logo=homebrew" alt="Homebrew"></a>
+    <a href="https://www.npmjs.com/package/@terraphim/autocomplete"><img src="https://img.shields.io/npm/v/@terraphim/autocomplete.svg" alt="npm"></a>
+    <a href="https://pypi.org/project/terraphim-automata/"><img src="https://img.shields.io/pypi/v/terraphim-automata.svg" alt="PyPI"></a>
+    <a href="https://discord.gg/VPJXB6BGuY"><img src="https://img.shields.io/discord/852545081613615144?label=Discord&logo=Discord" alt="Discord"></a>
+  </div>
+  <h1>
+    <span class="rust-col">Rust</span> Knowledge Graph Engine<br>
+    for <span class="accent">Deterministic AI Search</span>
+  </h1>
+  <p class="hero-sub">
+    Terraphim AI is a modular 52-crate Rust workspace for privacy-first knowledge graph search.
+    Aho-Corasick automata match thousands of patterns in O(n) time. Sub-millisecond latency.
+    Zero cloud dependency. Your data never leaves your machine.
+  </p>
+  <div class="hero-actions">
+    <a href="#install" class="btn btn-primary">
+      <i class="fa-solid fa-download"></i> Install
+    </a>
+    <a href="https://docs.terraphim.ai" class="btn btn-ghost">
+      <i class="fa-solid fa-book"></i> Documentation
+    </a>
+    <a href="https://github.com/terraphim/terraphim-ai" class="btn btn-ghost">
+      <i class="fa-brands fa-github"></i> Source Code
+    </a>
+    <a href="https://terraphim.ai/docs/crates/" class="btn btn-ghost">
+      <i class="fa-solid fa-cubes"></i> 52 Crates Reference
+    </a>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="container">
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-val">52</div>
+      <div class="stat-label">Rust Crates</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val">5-10ns</div>
+      <div class="stat-label">KG Inference</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val">15 MB</div>
+      <div class="stat-label">RAM Footprint</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val">0</div>
+      <div class="stat-label">Cloud Dependencies</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val">4</div>
+      <div class="stat-label">Language Bindings</div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- INSTALL -->
+<section class="install-section container" id="install">
+  <div class="section-head">
+    <h2>Quick Install</h2>
+    <p>Multiple installation methods for every workflow</p>
+  </div>
+  <div class="install-grid">
+    <div class="install-card">
+      <h3><i class="fa-solid fa-terminal"></i> Universal Installer (recommended)</h3>
+      <pre><span class="comment"># Single command, platform detection</span>
+curl -fsSL https://raw.githubusercontent.com/terraphim/terraphim-ai/main/scripts/install.sh | bash
+
+<span class="comment"># With CLI tools</span>
+curl -fsSL https://raw.githubusercontent.com/terraphim/terraphim-ai/main/scripts/install.sh | bash --with-cli</pre>
+    </div>
+    <div class="install-card">
+      <h3><i class="fa-solid fa-beer-mug-empty"></i> Homebrew (macOS / Linux)</h3>
+      <pre><span class="comment"># Add Terraphim tap</span>
+brew tap terraphim/terraphim
+
+<span class="comment"># Install server + agent</span>
+brew install terraphim-server
+brew install terraphim-agent</pre>
+    </div>
+    <div class="install-card">
+      <h3><i class="fa-brands fa-rust"></i> Cargo Install</h3>
+      <pre><span class="comment"># Interactive agent (REPL + session search)</span>
+cargo install terraphim_agent
+
+<span class="comment"># With full features</span>
+cargo install terraphim_agent --features repl-full
+
+<span class="comment"># Automation CLI (JSON output)</span>
+cargo install terraphim-cli</pre>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- CAPABILITIES -->
+<section class="section container" id="capabilities">
+  <div class="section-head">
+    <h2>Core Capabilities</h2>
+    <p>What makes Terraphim different from traditional search</p>
+  </div>
+  <div class="cap-grid">
+    <div class="cap-card">
+      <h3><i class="fa-solid fa-shield-halved"></i> Local-First Architecture</h3>
+      <p>All indexing, searching, and graph traversal happens entirely on your device. No cloud dependency, no telemetry, no account required. Privacy by architecture, not by policy.</p>
+    </div>
+    <div class="cap-card">
+      <h3><i class="fa-solid fa-diagram-project"></i> Knowledge Graph Engine</h3>
+      <p>Aho-Corasick finite state automata match thousands of patterns simultaneously in O(n) time. Lexical extraction, graph traversal, pluggable scorers (BM25, TF-IDF, Jaccard), and similarity re-ranking.</p>
+    </div>
+    <div class="cap-card">
+      <h3><i class="fa-solid fa-plug"></i> MCP Server</h3>
+      <p>Native Model Context Protocol server connects AI assistants like Claude Code to your local knowledge graphs. Paragraph extraction, semantic search, and token tracking without data leaving your machine.</p>
+    </div>
+    <div class="cap-card">
+      <h3><i class="fa-brands fa-rust"></i> Rust + WASM Performance</h3>
+      <p>Written in Rust, compiles to WebAssembly. KG inference in 5-10 nanoseconds. Pipeline processing in hundreds of milliseconds. 15 MB RAM. No GPU required.</p>
+    </div>
+    <div class="cap-card">
+      <h3><i class="fa-solid fa-code-branch"></i> AI Coding Hooks</h3>
+      <p>Two-stage runtime validation for AI-assisted development. Guard stage blocks dangerous operations. Replacement stage enhances text with KG patterns. Failed commands auto-captured for learning.</p>
+    </div>
+    <div class="cap-card">
+      <h3><i class="fa-solid fa-magnifying-glass-chart"></i> KG-Boosted File Search</h3>
+      <p>Find files by semantic relationship to domain concepts, not just keywords. Multi-source search across local filesystem, Obsidian vaults, Atomic Server, and code repositories. Role-specific relevance.</p>
+    </div>
+    <div class="cap-card">
+      <h3><i class="fa-solid fa-users-gear"></i> Role-Based Knowledge Graphs</h3>
+      <p>Each role has its own knowledge graph with domain-specific concepts and synonyms. Engineers, project managers, and analysts see the same documents ranked differently based on their role.</p>
+    </div>
+    <div class="cap-card">
+      <h3><i class="fa-solid fa-robot"></i> AI Dark Factory</h3>
+      <p>OTP-inspired agent orchestration for running autonomous AI coding agents. Supervision trees, message passing, reconciliation loops, and fault-tolerant lifecycle management.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ARCHITECTURE -->
+<section class="section container" id="architecture">
+  <div class="section-head">
+    <h2>Layered Architecture</h2>
+    <p>52 crates organised in a clean dependency graph</p>
+  </div>
+  <div class="arch-layers">
+    <div class="arch-layer">
+      <span class="arch-num">6</span>
+      <span class="arch-name">User Interfaces</span>
+      <span class="arch-crates">terraphim_agent, terraphim-cli, terraphim_server, terraphim_tinyclaw</span>
+    </div>
+    <div class="arch-layer">
+      <span class="arch-num">5</span>
+      <span class="arch-name">Orchestration</span>
+      <span class="arch-crates">terraphim_orchestrator, terraphim_kg_orchestration, terraphim_symphony</span>
+    </div>
+    <div class="arch-layer">
+      <span class="arch-num">4</span>
+      <span class="arch-name">Agent System</span>
+      <span class="arch-crates">terraphim_spawner, terraphim_router, terraphim_agent_supervisor</span>
+    </div>
+    <div class="arch-layer">
+      <span class="arch-num">3</span>
+      <span class="arch-name">Service Layer</span>
+      <span class="arch-crates">terraphim_service, terraphim_middleware, haystack_*</span>
+    </div>
+    <div class="arch-layer">
+      <span class="arch-num">2</span>
+      <span class="arch-name">Core Engine</span>
+      <span class="arch-crates">terraphim_automata, terraphim_rolegraph, terraphim_persistence</span>
+    </div>
+    <div class="arch-layer">
+      <span class="arch-num">1</span>
+      <span class="arch-name">Types and Config</span>
+      <span class="arch-crates">terraphim_types, terraphim_config, terraphim_settings</span>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- CRATES -->
+<section class="crate-section container" id="crates">
+  <div class="section-head">
+    <h2>52 Crates</h2>
+    <p>Each crate has a single responsibility and can be used independently</p>
+  </div>
+
+  <div class="crate-group">
+    <h3><i class="fa-solid fa-microchip"></i> Core Engine (11 crates)</h3>
+    <table class="crate-table">
+      <thead><tr><th>Crate</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>terraphim_automata</td><td>Aho-Corasick automata for searching and processing knowledge graphs. The core matching engine.</td></tr>
+        <tr><td>terraphim_rolegraph</td><td>Role-based knowledge graph module. Maps search roles to domain-specific graph views.</td></tr>
+        <tr><td>terraphim_types</td><td>Core types crate shared across the entire workspace.</td></tr>
+        <tr><td>terraphim_config</td><td>Configuration loading and management for all Terraphim components.</td></tr>
+        <tr><td>terraphim_settings</td><td>Settings handling library for runtime preferences and defaults.</td></tr>
+        <tr><td>terraphim_service</td><td>Service layer handling user requests and responses for the Terraphim core.</td></tr>
+        <tr><td>terraphim_middleware</td><td>Middleware for searching haystacks (pluggable data source backends).</td></tr>
+        <tr><td>terraphim-markdown-parser</td><td>Markdown parser for extracting structured content from knowledge base files.</td></tr>
+        <tr><td>terraphim_persistence</td><td>Persistence layer with Persistable trait and DeviceStorage backends (memory, SQLite, redb).</td></tr>
+        <tr><td>terraphim_build_args</td><td>Build argument management for compile-time feature configuration.</td></tr>
+        <tr><td>terraphim_test_utils</td><td>Shared test utilities and fixtures for all Terraphim crates.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="crate-group">
+    <h3><i class="fa-solid fa-terminal"></i> Binaries and CLIs (5 crates)</h3>
+    <table class="crate-table">
+      <thead><tr><th>Crate</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>terraphim_agent</td><td>AI Agent CLI with interactive REPL, session search, learning capture, and ASCII graph visualisation.</td></tr>
+        <tr><td>terraphim-cli</td><td>CLI tool for semantic knowledge graph search with JSON output for automation and scripting.</td></tr>
+        <tr><td>terraphim_server</td><td>HTTP server handling the core logic. Provides REST API and knowledge graph backend.</td></tr>
+        <tr><td>terraphim_update</td><td>Shared auto-update functionality for all Terraphim AI binaries.</td></tr>
+        <tr><td>terraphim_validation</td><td>Release validation system ensuring binary and asset integrity before publishing.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="crate-group">
+    <h3><i class="fa-solid fa-robot"></i> Agent Orchestration: AI Dark Factory (10 crates)</h3>
+    <table class="crate-table">
+      <thead><tr><th>Crate</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>terraphim_orchestrator</td><td>AI Dark Factory orchestrator wiring spawner, router, and supervisor into a reconciliation loop.</td></tr>
+        <tr><td>terraphim_spawner</td><td>Agent spawner with health checking, output capture, and lifecycle management.</td></tr>
+        <tr><td>terraphim_router</td><td>Unified routing engine for LLM and agent providers (keyword routing, tier selection).</td></tr>
+        <tr><td>terraphim_agent_supervisor</td><td>OTP-inspired supervision trees for fault-tolerant AI agent management.</td></tr>
+        <tr><td>terraphim_agent_application</td><td>OTP-style application behaviour for the Terraphim agent system.</td></tr>
+        <tr><td>terraphim_agent_messaging</td><td>Erlang-style asynchronous message passing system for AI agents.</td></tr>
+        <tr><td>terraphim_agent_registry</td><td>Knowledge graph-based agent registry for intelligent agent discovery and capability matching.</td></tr>
+        <tr><td>terraphim_agent_evolution</td><td>Agent evolution and self-improvement tracking.</td></tr>
+        <tr><td>terraphim_workspace</td><td>Workspace management for agent execution including lifecycle, hooks, and isolation.</td></tr>
+        <tr><td>terraphim_multi_agent</td><td>Multi-agent system built on roles with rust-genai integration.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="crate-group">
+    <h3><i class="fa-solid fa-brain"></i> Knowledge Graph Intelligence (8 crates)</h3>
+    <table class="crate-table">
+      <thead><tr><th>Crate</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>terraphim_kg_orchestration</td><td>Knowledge graph-based agent orchestration engine for coordinating multi-agent workflows.</td></tr>
+        <tr><td>terraphim_kg_agents</td><td>Specialised knowledge graph-based agent implementations.</td></tr>
+        <tr><td>terraphim_kg_linter</td><td>Linter for markdown-based Terraphim KG schemas (commands, types, permissions).</td></tr>
+        <tr><td>terraphim_goal_alignment</td><td>Knowledge graph-based goal alignment system for multi-level goal management and conflict resolution.</td></tr>
+        <tr><td>terraphim_task_decomposition</td><td>Knowledge graph-based task decomposition for intelligent task analysis and execution planning.</td></tr>
+        <tr><td>terraphim_rlm</td><td>Recursive Language Model (RLM) orchestration for structured reasoning chains.</td></tr>
+        <tr><td>terraphim_hooks</td><td>Unified hooks infrastructure for knowledge graph-based text replacement and validation.</td></tr>
+        <tr><td>terraphim_file_search</td><td>Knowledge-graph scored file search integration.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="crate-group">
+    <h3><i class="fa-solid fa-plug"></i> Haystack Integrations (5 crates)</h3>
+    <table class="crate-table">
+      <thead><tr><th>Crate</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>haystack_core</td><td>Core traits and types for all Terraphim haystack integrations.</td></tr>
+        <tr><td>haystack_atlassian</td><td>Atlassian (Confluence, Jira) integration for searching enterprise knowledge bases.</td></tr>
+        <tr><td>haystack_discourse</td><td>Discourse forum integration for fetching posts and messages.</td></tr>
+        <tr><td>haystack_grepapp</td><td>Grep.app integration for searching code across GitHub repositories.</td></tr>
+        <tr><td>haystack_jmap</td><td>JMAP email protocol integration for searching email (Fastmail, etc.).</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="crate-group">
+    <h3><i class="fa-solid fa-chart-line"></i> Session and Usage Analytics (4 crates)</h3>
+    <table class="crate-table">
+      <thead><tr><th>Crate</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>terraphim_sessions</td><td>Session management for AI coding assistant history. Search across Claude Code, Cursor, and Aider sessions.</td></tr>
+        <tr><td>terraphim-session-analyzer</td><td>Analyse AI coding assistant session logs to identify agent usage patterns.</td></tr>
+        <tr><td>terraphim_ccusage</td><td>Claude Code usage tracking and cost analysis.</td></tr>
+        <tr><td>terraphim_usage</td><td>General usage telemetry and analytics.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="crate-group">
+    <h3><i class="fa-solid fa-server"></i> DevOps and Infrastructure (7 crates)</h3>
+    <table class="crate-table">
+      <thead><tr><th>Crate</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>terraphim_symphony</td><td>Symphony orchestration service. Reads issues from trackers and dispatches coding agent sessions.</td></tr>
+        <tr><td>terraphim_tracker</td><td>Issue tracker abstraction for Gitea and Linear with PageRank-based prioritisation.</td></tr>
+        <tr><td>terraphim_github_runner</td><td>GitHub Actions runner with Firecracker sandbox integration.</td></tr>
+        <tr><td>terraphim_github_runner_server</td><td>HTTP server for the GitHub Actions runner service.</td></tr>
+        <tr><td>terraphim-firecracker</td><td>Sub-2-second VM boot optimisation system for sandboxed agent execution.</td></tr>
+        <tr><td>terraphim_mcp_server</td><td>Model Context Protocol (MCP) server exposing Terraphim tools to AI assistants.</td></tr>
+        <tr><td>terraphim_onepassword_cli</td><td>1Password CLI integration for secret management.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="crate-group">
+    <h3><i class="fa-solid fa-comments"></i> Chat and Assistants (1 crate)</h3>
+    <table class="crate-table">
+      <thead><tr><th>Crate</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>terraphim_tinyclaw</td><td>Multi-channel AI assistant for Telegram, Discord, and CLI.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="crate-group">
+    <h3><i class="fa-solid fa-language"></i> Language Bindings (4 crates) + Browser Extension</h3>
+    <table class="crate-table">
+      <thead><tr><th>Crate</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>terraphim_automata_py</td><td>Python (PyO3) bindings for terraphim_automata. Fast autocomplete and text processing.</td></tr>
+        <tr><td>terraphim_rolegraph_py</td><td>Python bindings for terraphim_rolegraph. Knowledge graph operations for AI agents.</td></tr>
+        <tr><td>terraphim-automata-node-rs</td><td>Node.js (NAPI) bindings for Terraphim's Aho-Corasick matcher.</td></tr>
+        <tr><td>terraphim-automata-wasm</td><td>WebAssembly bindings for terraphim_automata. Runs in the browser.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- LANGUAGE BINDINGS -->
+<section class="section container">
+  <div class="section-head">
+    <h2>Multi-Language Support</h2>
+    <p>Use Terraphim from Rust, Python, Node.js, or the browser</p>
+  </div>
+  <div class="bindings-grid">
+    <div class="binding-card">
+      <h3><i class="fa-brands fa-rust" style="color: var(--rust)"></i> Rust (native)</h3>
+      <p>Full access to all 52 crates. Interactive REPL, CLI automation, HTTP server, and agent orchestration.</p>
+      <pre>cargo install terraphim_agent</pre>
+    </div>
+    <div class="binding-card">
+      <h3><i class="fa-brands fa-python" style="color: #3776ab"></i> Python (PyO3)</h3>
+      <p>High-performance text processing and autocomplete. Native bindings via PyO3.</p>
+      <pre>pip install terraphim-automata</pre>
+    </div>
+    <div class="binding-card">
+      <h3><i class="fa-brands fa-node-js" style="color: #68a063"></i> Node.js (NAPI)</h3>
+      <p>Autocomplete and knowledge graph operations with native NAPI bindings.</p>
+      <pre>npm install @terraphim/autocomplete</pre>
+    </div>
+    <div class="binding-card">
+      <h3><i class="fa-solid fa-globe" style="color: #654ff0"></i> WebAssembly</h3>
+      <p>Same Rust codebase compiled to WASM. Runs in any modern browser with no installation.</p>
+      <pre><span class="comment"># Browser extension available</span>
+<span class="comment"># terraphim-automata-wasm on npm</span></pre>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- PERFORMANCE -->
+<section class="section container">
+  <div class="section-head">
+    <h2>Performance Comparison</h2>
+    <p>From ML pipeline to nanosecond inference</p>
+  </div>
+  <table class="crate-table" style="max-width: 700px; margin: 0 auto;">
+    <thead>
+      <tr><th>Metric</th><th>Traditional ML</th><th>The Pattern</th><th>Terraphim AI</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Data processing</td><td>6 days</td><td>6 hours</td><td style="color: var(--green); font-weight: 700;">Hundreds of ms</td></tr>
+      <tr><td>Inference latency</td><td>Seconds</td><td>&lt; 2 ms</td><td style="color: var(--green); font-weight: 700;">5-10 ns</td></tr>
+      <tr><td>RAM footprint</td><td>Gigabytes</td><td>Hundreds of MB</td><td style="color: var(--green); font-weight: 700;">15-20 MB</td></tr>
+      <tr><td>GPU required</td><td>Yes</td><td>No</td><td style="color: var(--green); font-weight: 700;">No</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<hr class="divider">
+
+<!-- LINKS -->
+<section class="section container">
+  <div class="section-head">
+    <h2>Resources</h2>
+  </div>
+  <div class="cap-grid">
+    <div class="cap-card">
+      <h3><i class="fa-solid fa-book"></i> Documentation</h3>
+      <p>
+        <a href="https://docs.terraphim.ai">docs.terraphim.ai</a> -- Full technical documentation (mdBook)<br>
+        <a href="https://terraphim.ai/docs/crates/">Crate Reference</a> -- All 52 crates with descriptions<br>
+        <a href="https://terraphim.ai/docs/installation/">Installation Guide</a> -- Platform-specific instructions<br>
+        <a href="https://terraphim.ai/docs/quickstart/">Quickstart</a> -- Get running in 5 minutes
+      </p>
+    </div>
+    <div class="cap-card">
+      <h3><i class="fa-solid fa-newspaper"></i> Blog</h3>
+      <p>
+        <a href="https://terraphim.ai/posts/teaching-ai-agents-with-knowledge-graphs/">Teaching AI Agents with Knowledge Graph Hooks</a><br>
+        <a href="https://terraphim.ai/posts/teaching-ai-agents-to-learn-from-mistakes/">Teaching AI Agents to Learn from Their Mistakes</a><br>
+        <a href="https://terraphim.ai/docs/graph-embeddings/">Graph Embeddings Documentation</a>
+      </p>
+    </div>
+    <div class="cap-card">
+      <h3><i class="fa-solid fa-people-group"></i> Community</h3>
+      <p>
+        <a href="https://discord.gg/VPJXB6BGuY">Discord</a> -- Chat with the team<br>
+        <a href="https://terraphim.discourse.group">Discourse</a> -- Long-form discussion<br>
+        <a href="https://github.com/terraphim/terraphim-ai/issues">GitHub Issues</a> -- Bug reports and features<br>
+        <a href="https://github.com/terraphim/terraphim-ai">Source Code</a> -- MIT + Apache 2.0
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-links">
+      <a href="https://terraphim.ai">terraphim.ai</a>
+      <a href="https://docs.terraphim.ai">docs.terraphim.ai</a>
+      <a href="https://github.com/terraphim/terraphim-ai">GitHub</a>
+      <a href="https://crates.io/crates/terraphim_agent">crates.io</a>
+      <a href="https://pypi.org/project/terraphim-automata/">PyPI</a>
+      <a href="https://www.npmjs.com/package/@terraphim/autocomplete">npm</a>
+      <a href="https://discord.gg/VPJXB6BGuY">Discord</a>
+    </div>
+    <p>Terraphim AI -- Privacy-first knowledge graph search. Built in Rust.</p>
+  </div>
+</footer>
+
+</body>
+</html>
